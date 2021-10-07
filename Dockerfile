@@ -1,0 +1,18 @@
+FROM node:14
+
+WORKDIR /var/node/fin-life-api
+
+ENV TYPEORM_CONNECTION=postgres
+ENV TYPEORM_USERNAME=postgres
+ENV TYPEORM_PASSWORD=admin
+ENV TYPEORM_DATABASE=finlife
+ENV TYPEORM_MIGRATIONS=migrations/*.ts
+ENV TYPEORM_ENTITIES=dist/**/*.entity{.ts,.js}
+ENV TYPEORM_LOGGING=true
+ENV TYPEORM_MIGRATIONS_RUN=true
+
+COPY . .
+
+RUN yarn
+
+CMD yarn start
