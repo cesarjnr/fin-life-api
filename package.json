@@ -21,7 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:create": "ts-node ./node_modules/.bin/typeorm migration:create -n $1",
     "migration:run": "nest build && ./node_modules/.bin/typeorm migration:run",
-    "migration:revert": "ts-node ./node_modules/.bin/typeorm migration:revert",
+    "migration:revert": "nest build && ./node_modules/.bin/typeorm migration:revert",
     "compose:build": "docker-compose build",
     "compose:up": "docker-compose up",
     "compose:build:up": "docker-compose up --build"

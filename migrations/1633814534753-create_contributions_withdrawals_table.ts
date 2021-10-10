@@ -68,6 +68,6 @@ export class createContributionsWithdrawalsTable1633814534753 implements Migrati
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-
+    await queryRunner.dropTable('contributions_withdrawals');
   }
 }
