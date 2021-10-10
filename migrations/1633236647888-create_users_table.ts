@@ -14,19 +14,27 @@ export class createUsersTable1633236647888 implements MigrationInterface {
         },
         {
           name: 'name',
-          type: 'varchar'
+          type: 'varchar',
+          length: '50'
         },
         {
           name: 'email',
-          type: 'varchar'
+          type: 'varchar',
+          length: '128',
+          isUnique: true
         },
         {
           name: 'password',
           type: 'varchar',
           length: '16'
+        },
+        {
+          name: 'deleted_at',
+          type: 'timestamp',
+          isNullable: true
         }
       ]
-    }))
+    }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
