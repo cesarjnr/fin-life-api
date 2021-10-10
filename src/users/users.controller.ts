@@ -18,7 +18,7 @@ export class UsersController {
   @Post()
   public async create(
     @Body() createUserDto: CreateUserDto
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 }
