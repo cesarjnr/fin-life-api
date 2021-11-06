@@ -2,6 +2,7 @@ version: "3"
 services:
   api:
     build: .
+    image: fin_life_api
     ports:
       - 3000:3000
     environment:
