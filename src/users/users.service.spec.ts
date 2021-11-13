@@ -23,11 +23,11 @@ describe('UsersService', () => {
           provide: getRepositoryToken(User),
           useValue: {
             findOne: jest.fn(),
-            save: jest.fn(),
-          },
+            save: jest.fn()
+          }
         },
-        UsersService,
-      ],
+        UsersService
+      ]
     }).compile();
 
     mockUsersRepository = moduleRef.get<jest.Mocked<Repository<User>>>(
@@ -45,7 +45,7 @@ describe('UsersService', () => {
     const createUserDto: CreateUserDto = {
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: faker.internet.password(16),
+      password: faker.internet.password(16)
     };
 
     beforeEach(() => {
@@ -56,13 +56,13 @@ describe('UsersService', () => {
       await usersService.create(createUserDto);
 
       expect(mockUsersRepository.findOne).toHaveBeenCalledWith({
-        email: createUserDto.email,
+        email: createUserDto.email
       });
       expect(mockHashFn).toHaveBeenCalledWith(createUserDto.password, 10);
       expect(mockUsersRepository.save).toHaveBeenCalledWith({
         name: createUserDto.name,
         email: createUserDto.email,
-        password: hash,
+        password: hash
       });
     });
 
@@ -72,7 +72,7 @@ describe('UsersService', () => {
         id: faker.datatype.number(100),
         name: faker.name.findName(),
         email: createUserDto.email,
-        password: faker.internet.password(10),
+        password: faker.internet.password(10)
       };
 
       mockUsersRepository.findOne.mockResolvedValue(existingUser);
@@ -81,7 +81,7 @@ describe('UsersService', () => {
         thrownError
       );
       expect(mockUsersRepository.findOne).toHaveBeenCalledWith({
-        email: createUserDto.email,
+        email: createUserDto.email
       });
       expect(mockHashFn).not.toHaveBeenCalled();
       expect(mockUsersRepository.save).not.toHaveBeenCalled();

@@ -3,7 +3,7 @@ import {
   Post,
   Body,
   UseInterceptors,
-  ClassSerializerInterceptor,
+  ClassSerializerInterceptor
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';

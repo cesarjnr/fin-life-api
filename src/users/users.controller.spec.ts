@@ -16,10 +16,10 @@ describe('UsersController', () => {
         {
           provide: UsersService,
           useValue: {
-            create: jest.fn(),
-          },
-        },
-      ],
+            create: jest.fn()
+          }
+        }
+      ]
     }).compile();
 
     usersService = moduleRef.get<UsersService>(UsersService);
@@ -31,7 +31,7 @@ describe('UsersController', () => {
       const createUserDto: CreateUserDto = {
         name: faker.name.findName(),
         email: faker.internet.email(),
-        password: faker.internet.password(16),
+        password: faker.internet.password(16)
       };
 
       await usersController.create(createUserDto);
