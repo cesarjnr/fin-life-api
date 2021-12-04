@@ -36,6 +36,24 @@ export class createCashFlowTable1633812932620 implements MigrationInterface {
             enum: ['revenue', 'expense']
           },
           {
+            name: 'counterpart',
+            type: 'varchar',
+            isNullable: true,
+            comment: 'Who is paying the revenue or receiving the expense'
+          },
+          {
+            name: 'payment_method',
+            type: 'enum',
+            enum: ['debit', 'credit', 'pix', 'money'],
+            isNullable: true
+          },
+          {
+            name: 'payment_institution',
+            type: 'varchar',
+            isNullable: true,
+            comment: 'Institution used to pay the expense or that sent the revenue'
+          },
+          {
             name: 'date',
             type: 'timestamp'
           }
