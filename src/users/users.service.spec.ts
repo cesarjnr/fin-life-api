@@ -30,9 +30,7 @@ describe('UsersService', () => {
       ]
     }).compile();
 
-    mockUsersRepository = moduleRef.get<jest.Mocked<Repository<User>>>(
-      getRepositoryToken(User)
-    );
+    mockUsersRepository = moduleRef.get<jest.Mocked<Repository<User>>>(getRepositoryToken(User));
     usersService = moduleRef.get<UsersService>(UsersService);
   });
 
@@ -77,9 +75,7 @@ describe('UsersService', () => {
 
       mockUsersRepository.findOne.mockResolvedValue(existingUser);
 
-      await expect(usersService.create(createUserDto)).rejects.toStrictEqual(
-        thrownError
-      );
+      await expect(usersService.create(createUserDto)).rejects.toStrictEqual(thrownError);
       expect(mockUsersRepository.findOne).toHaveBeenCalledWith({
         email: createUserDto.email
       });

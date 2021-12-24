@@ -1,5 +1,5 @@
-import { Repository } from 'typeorm';
 import { Injectable, ConflictException } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
 
@@ -8,9 +8,7 @@ import { CreateUserDto } from './createUser.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
-  ) {}
+  constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
 
   public async create(createUserDto: CreateUserDto): Promise<User> {
     const { name, email, password } = createUserDto;

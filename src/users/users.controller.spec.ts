@@ -1,13 +1,13 @@
-import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
+import { Test } from '@nestjs/testing';
 
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './createUser.dto';
 
 describe('UsersController', () => {
-  let usersController: UsersController;
   let usersService: UsersService;
+  let usersController: UsersController;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -27,7 +27,7 @@ describe('UsersController', () => {
   });
 
   describe('create', () => {
-    it('should call the service method with the right payload', async () => {
+    it('should call the method of the service with the correct payload', async () => {
       const createUserDto: CreateUserDto = {
         name: faker.name.findName(),
         email: faker.internet.email(),

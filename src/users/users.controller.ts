@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseInterceptors,
-  ClassSerializerInterceptor
-} from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './createUser.dto';

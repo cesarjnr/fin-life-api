@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class createExpensesCategoriesTable1633812328038
-  implements MigrationInterface
-{
+export class createExpensesCategoriesTable1633812328038 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -27,8 +25,7 @@ export class createExpensesCategoriesTable1633812328038
             name: 'revenue_percentage',
             type: 'int',
             isNullable: true,
-            comment:
-              'Percentage this category will take up in the total calculated revenue'
+            comment: 'Percentage this category will take up in the total calculated revenue'
           }
         ],
         foreignKeys: [
