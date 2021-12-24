@@ -7,7 +7,7 @@ import * as faker from 'faker';
 
 import { User } from './user.entity';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './create-user.dto';
+import { CreateUserDto } from './createUser.dto';
 
 jest.mock('bcrypt');
 

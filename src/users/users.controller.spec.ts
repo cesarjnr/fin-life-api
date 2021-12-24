@@ -3,7 +3,7 @@ import * as faker from 'faker';
 
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './create-user.dto';
+import { CreateUserDto } from './createUser.dto';
 
 describe('UsersController', () => {
   let usersController: UsersController;
