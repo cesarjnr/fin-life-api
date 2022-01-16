@@ -1,8 +1,6 @@
 module.exports = {
-  preset: "ts-jest",
-  collectCoverageFrom: [
-    "src/**/*.ts",
-    "!src/main.ts",
-    "!src/**/*.module.ts"
-  ]
+  preset: 'ts-jest',
+  collectCoverage: true,
+  collectCoverageFrom: ['src/**/*.ts', '!src/main.ts', '!src/**/*.module.ts'],
+  clearMocks: true
 };

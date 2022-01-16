@@ -16,11 +16,11 @@ export class UsersService {
     await this.checkIfUserAlreadyExists(email);
 
     const hash = await this.generateHash(password);
-    const user = new User({ name, email, password: hash });
+    const newUser = new User({ name, email, password: hash });
 
-    await this.usersRepository.save(user);
+    await this.usersRepository.save(newUser);
 
-    return user;
+    return newUser;
   }
 
   private async checkIfUserAlreadyExists(email: string): Promise<void> {

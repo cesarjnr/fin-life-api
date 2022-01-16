@@ -1,9 +1,9 @@
+import * as faker from 'faker';
 import { hash } from 'bcrypt';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
-import * as faker from 'faker';
 
 import { User } from './user.entity';
 import { UsersService } from './users.service';
@@ -34,10 +34,6 @@ describe('UsersService', () => {
     usersService = moduleRef.get<UsersService>(UsersService);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe('create', () => {
     const hash = faker.git.commitSha();
     const createUserDto: CreateUserDto = {
@@ -50,21 +46,7 @@ describe('UsersService', () => {
       mockHashFn.mockImplementation(() => Promise.resolve(hash));
     });
 
-    it('should create a user', async () => {
-      await usersService.create(createUserDto);
-
-      expect(mockUsersRepository.findOne).toHaveBeenCalledWith({
-        email: createUserDto.email
-      });
-      expect(mockHashFn).toHaveBeenCalledWith(createUserDto.password, 10);
-      expect(mockUsersRepository.save).toHaveBeenCalledWith({
-        name: createUserDto.name,
-        email: createUserDto.email,
-        password: hash
-      });
-    });
-
-    it('should catch a ConflictException when the given email already exists', async () => {
+    it('should throw a ConflictException when the given email already exists', async () => {
       const thrownError = new ConflictException('Email already exists');
       const existingUser: User = {
         id: faker.datatype.number(100),
@@ -81,6 +63,29 @@ describe('UsersService', () => {
       });
       expect(mockHashFn).not.toHaveBeenCalled();
       expect(mockUsersRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should create a user', async () => {
+      const newUserId = faker.datatype.number(100);
+
+      mockUsersRepository.save = jest.fn().mockImplementation((user: User) => {
+        user.id = newUserId;
+
+        return user;
+      });
+
+      const newUser = await usersService.create(createUserDto);
+
+      expect(newUser).toEqual({
+        ...createUserDto,
+        id: newUserId,
+        password: hash
+      });
+      expect(mockUsersRepository.findOne).toHaveBeenCalledWith({
+        email: createUserDto.email
+      });
+      expect(mockHashFn).toHaveBeenCalledWith(createUserDto.password, 10);
+      expect(mockUsersRepository.save).toHaveBeenCalled();
     });
   });
 });
