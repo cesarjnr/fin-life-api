@@ -4,7 +4,7 @@ import { ExpenseCategoriesService } from './expenseCategories.service';
 import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
 import { ExpenseCategory } from './expenseCategory.entity';
 
-@Controller('expenseCategories')
+@Controller('expense-categories')
 export class ExpenseCategoriesController {
   constructor(private expenseCategoriesService: ExpenseCategoriesService) {}
 

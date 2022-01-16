@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class createExpensesCategoriesTable1633812328038 implements MigrationInterface {
+export class createExpenseCategoriesTable1633812328038 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'expenses_categories',
+        name: 'expense_categories',
         columns: [
           {
             name: 'id',
@@ -30,7 +30,7 @@ export class createExpensesCategoriesTable1633812328038 implements MigrationInte
         ],
         foreignKeys: [
           {
-            name: 'expenses_categories_user_id_fkey',
+            name: 'expense_categories_user_id_fkey',
             columnNames: ['user_id'],
             referencedTableName: 'users',
             referencedColumnNames: ['id']
@@ -38,7 +38,7 @@ export class createExpensesCategoriesTable1633812328038 implements MigrationInte
         ],
         indices: [
           {
-            name: 'expenses_categories_user_id_fkey',
+            name: 'expense_categories_user_id_fkey',
             columnNames: ['user_id']
           }
         ]
@@ -47,6 +47,6 @@ export class createExpensesCategoriesTable1633812328038 implements MigrationInte
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('expenses_categories');
+    await queryRunner.dropTable('expense_categories');
   }
 }
