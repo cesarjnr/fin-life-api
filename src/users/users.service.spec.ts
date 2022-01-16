@@ -52,7 +52,8 @@ describe('UsersService', () => {
         id: faker.datatype.number(100),
         name: faker.name.findName(),
         email: createUserDto.email,
-        password: faker.internet.password(10)
+        password: faker.internet.password(10),
+        expenseCategories: []
       };
 
       mockUsersRepository.findOne.mockResolvedValue(existingUser);

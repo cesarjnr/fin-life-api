@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
@@ -15,20 +15,36 @@ export class ExpenseCategoriesService {
   ) {}
 
   public async create(createExpenseCategoryDto: CreateExpenseCategoryDto): Promise<ExpenseCategory> {
-    await this.checkIfUserExists(createExpenseCategoryDto.userId);
-
+    const user = await this.findUser(createExpenseCategoryDto.userId);
     const newExpenseCategory = new ExpenseCategory(createExpenseCategoryDto);
 
+    this.checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid(newExpenseCategory, user.expenseCategories);
     await this.expenseCategoriesRepository.save(newExpenseCategory);
 
     return newExpenseCategory;
   }
 
-  private async checkIfUserExists(userId: number): Promise<void> {
-    const user = await this.usersRepository.findOne(userId);
+  private async findUser(userId: number): Promise<User> {
+    const user = await this.usersRepository.findOne(userId, { relations: ['expenseCategories'] });
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
+  private checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid(
+    newExpenseCategory: Omit<ExpenseCategory, 'id'>,
+    existingUserExpenseCatories: ExpenseCategory[]
+  ): void {
+    const maxRevenuePercentage = 100;
+    const existingRevenuePercentageSum = existingUserExpenseCatories.reduce((sum, expenseCategory) => {
+      return (sum += expenseCategory.revenuePercentage);
+    }, 0);
+
+    if (existingRevenuePercentageSum + newExpenseCategory.revenuePercentage > maxRevenuePercentage) {
+      throw new ConflictException('The revenue percentage of all expense categories cannot exceed 100%');
     }
   }
 }

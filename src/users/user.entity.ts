@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
 import { CreateUserDto } from './createUser.dto';
+import { ExpenseCategory } from '../expenseCategories/expenseCategory.entity';
 
 @Entity('users')
 export class User {
@@ -17,6 +18,9 @@ export class User {
   @Exclude()
   @Column()
   password: string;
+
+  @OneToMany(() => ExpenseCategory, (expenseCategory) => expenseCategory.user)
+  expenseCategories: ExpenseCategory[];
 
   constructor(createUserDto: CreateUserDto) {
     Object.assign(this, createUserDto);
