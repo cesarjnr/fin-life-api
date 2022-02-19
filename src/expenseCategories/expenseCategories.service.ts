@@ -7,6 +7,10 @@ import { User } from '../users/user.entity';
 import { ExpenseCategory } from './expenseCategory.entity';
 import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
 
+export interface ExpenseCategoriesSearchParams {
+  userId?: number;
+}
+
 @Injectable()
 export class ExpenseCategoriesService {
   constructor(
@@ -22,6 +26,10 @@ export class ExpenseCategoriesService {
     await this.expenseCategoriesRepository.save(newExpenseCategory);
 
     return newExpenseCategory;
+  }
+
+  public async get(params?: ExpenseCategoriesSearchParams): Promise<ExpenseCategory[]> {
+    return await this.expenseCategoriesRepository.find(params);
   }
 
   private async findUser(userId: number): Promise<User> {

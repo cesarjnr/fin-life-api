@@ -5,7 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
 import { User } from '../users/user.entity';
-import { ExpenseCategoriesService } from './expenseCategories.service';
+import { ExpenseCategoriesService, ExpenseCategoriesSearchParams } from './expenseCategories.service';
 import { ExpenseCategory } from './expenseCategory.entity';
 import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
 
@@ -26,7 +26,8 @@ describe('ExpenseCategoriesService', () => {
         {
           provide: getRepositoryToken(ExpenseCategory),
           useValue: {
-            save: jest.fn()
+            save: jest.fn(),
+            find: jest.fn()
           }
         },
         ExpenseCategoriesService
@@ -116,6 +117,27 @@ describe('ExpenseCategoriesService', () => {
         relations: ['expenseCategories']
       });
       expect(mockExpenseCategoriesRepository.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('get', () => {
+    it('should get the expense categories', async () => {
+      const userId = faker.datatype.number(100);
+      const params: ExpenseCategoriesSearchParams = { userId };
+      const expenseCategory = new ExpenseCategory({
+        userId,
+        description: faker.lorem.paragraph(),
+        revenuePercentage: 30
+      });
+      expenseCategory.id = faker.datatype.number(100);
+
+      mockExpenseCategoriesRepository.find.mockResolvedValue([expenseCategory]);
+
+      const returnedExpenseCategories = await expenseCategoriesService.get(params);
+
+      expect(returnedExpenseCategories).toHaveLength(1);
+      expect(returnedExpenseCategories[0]).toStrictEqual(expenseCategory);
+      expect(mockExpenseCategoriesRepository.find).toHaveBeenCalledWith(params);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 
 import { ExpenseCategoriesService } from './expenseCategories.service';
 import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
@@ -13,6 +13,11 @@ export class ExpenseCategoriesController {
     @Param('userId') userId: string,
     @Body() createExpenseCategoryDto: Omit<CreateExpenseCategoryDto, 'userId'>
   ): Promise<ExpenseCategory> {
-    return this.expenseCategoriesService.create({ ...createExpenseCategoryDto, userId: Number(userId) });
+    return await this.expenseCategoriesService.create({ ...createExpenseCategoryDto, userId: Number(userId) });
+  }
+
+  @Get()
+  public async get(@Param('userId') userId: string): Promise<ExpenseCategory[]> {
+    return await this.expenseCategoriesService.get({ userId: Number(userId) });
   }
 }
