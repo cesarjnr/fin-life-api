@@ -1,7 +1,6 @@
 import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 
-import { ExpenseCategoriesService } from './expenseCategories.service';
-import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
+import { ExpenseCategoriesService, CreateExpenseCategoryDto } from './expenseCategories.service';
 import { ExpenseCategory } from './expenseCategory.entity';
 
 @Controller('users/:userId/expense-categories')

@@ -3,7 +3,6 @@ import { Test } from '@nestjs/testing';
 
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './createUser.dto';
 
 describe('UsersController', () => {
   let usersService: UsersService;
@@ -28,15 +27,15 @@ describe('UsersController', () => {
 
   describe('create', () => {
     it('should call the method of the service with the correct payload', async () => {
-      const createUserDto: CreateUserDto = {
+      const body = {
         name: faker.name.findName(),
         email: faker.internet.email(),
         password: faker.internet.password(16)
       };
 
-      await usersController.create(createUserDto);
+      await usersController.create(body);
 
-      expect(usersService.create).toHaveBeenCalledWith(createUserDto);
+      expect(usersService.create).toHaveBeenCalledWith(body);
     });
   });
 });

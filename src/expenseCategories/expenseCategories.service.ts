@@ -5,8 +5,12 @@ import { NotFoundException } from '@nestjs/common';
 
 import { User } from '../users/user.entity';
 import { ExpenseCategory } from './expenseCategory.entity';
-import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
 
+export interface CreateExpenseCategoryDto {
+  userId: number;
+  description: string;
+  revenuePercentage: number;
+}
 export interface ExpenseCategoriesSearchParams {
   userId?: number;
 }
@@ -19,8 +23,9 @@ export class ExpenseCategoriesService {
   ) {}
 
   public async create(createExpenseCategoryDto: CreateExpenseCategoryDto): Promise<ExpenseCategory> {
-    const user = await this.findUser(createExpenseCategoryDto.userId);
-    const newExpenseCategory = new ExpenseCategory(createExpenseCategoryDto);
+    const { description, revenuePercentage, userId } = createExpenseCategoryDto;
+    const user = await this.findUser(userId);
+    const newExpenseCategory = new ExpenseCategory(description, revenuePercentage, userId);
 
     this.checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid(newExpenseCategory, user.expenseCategories);
     await this.expenseCategoriesRepository.save(newExpenseCategory);

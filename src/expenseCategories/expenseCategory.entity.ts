@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 import { User } from '../users/user.entity';
-import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
 
 @Entity('expense_categories')
 export class ExpenseCategory {
@@ -21,7 +20,9 @@ export class ExpenseCategory {
   @JoinColumn({ name: 'user_id' })
   user?: User;
 
-  constructor(expenseCategory: CreateExpenseCategoryDto) {
-    Object.assign(this, expenseCategory);
+  constructor(description: string, revenuePercentage: number, userId: number) {
+    this.description = description;
+    this.revenuePercentage = revenuePercentage;
+    this.userId = userId;
   }
 }

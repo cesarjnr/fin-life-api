@@ -6,8 +6,7 @@ import { Repository } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
 
 import { User } from './user.entity';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './createUser.dto';
+import { UsersService, CreateUserDto } from './users.service';
 
 jest.mock('bcrypt');
 

@@ -4,7 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
 
 import { User } from './user.entity';
-import { CreateUserDto } from './createUser.dto';
+
+export interface CreateUserDto {
+  name: string;
+  email: string;
+  password: string;
+}
 
 @Injectable()
 export class UsersService {
@@ -16,7 +21,7 @@ export class UsersService {
     await this.checkIfUserAlreadyExists(email);
 
     const hash = await this.generateHash(password);
-    const newUser = new User({ name, email, password: hash });
+    const newUser = new User(name, email, hash);
 
     await this.usersRepository.save(newUser);
 

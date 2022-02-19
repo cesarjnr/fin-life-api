@@ -15,16 +15,12 @@ describe('ExpenseCategory', () => {
     const mockManyToOneCall = mockManyToOne.mock.calls[0];
     const mockManyToOneFirstCallback = mockManyToOneCall[0];
     const mockManyToOneSecondCallback = mockManyToOneCall[1];
-    const expenseCategory = new ExpenseCategory({
-      userId: faker.datatype.number(100),
-      description: faker.lorem.paragraph(),
-      revenuePercentage: 30
-    });
-    const user = new User({
-      name: faker.name.findName(),
-      email: faker.internet.email(),
-      password: faker.internet.password(16)
-    });
+    const expenseCategory = new ExpenseCategory(
+      faker.lorem.paragraph(),
+      faker.datatype.number(100),
+      faker.datatype.number(100)
+    );
+    const user = new User(faker.name.findName(), faker.internet.email(), faker.internet.password(16));
 
     user.expenseCategories = [expenseCategory];
 

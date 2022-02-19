@@ -5,9 +5,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
 import { User } from '../users/user.entity';
-import { ExpenseCategoriesService, ExpenseCategoriesSearchParams } from './expenseCategories.service';
+import {
+  ExpenseCategoriesService,
+  CreateExpenseCategoryDto,
+  ExpenseCategoriesSearchParams
+} from './expenseCategories.service';
 import { ExpenseCategory } from './expenseCategory.entity';
-import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
 
 describe('ExpenseCategoriesService', () => {
   let mockUsersRepository: jest.Mocked<Repository<User>>;
@@ -63,20 +66,10 @@ describe('ExpenseCategoriesService', () => {
 
     it('should throw a ConflictException when the revenue percentage of the new expense category plus the existing ones outweighs 100', async () => {
       const thrownError = new ConflictException('The revenue percentage of all expense categories cannot exceed 100%');
-      const user = new User({
-        name: faker.name.findName(),
-        email: faker.internet.email(),
-        password: faker.internet.password(16)
-      });
+      const user = new User(faker.name.findName(), faker.internet.email(), faker.internet.password(16));
       const existingExpenseCategories = [
-        new ExpenseCategory({
-          ...createExpenseCategoryDto,
-          revenuePercentage: 50
-        }),
-        new ExpenseCategory({
-          ...createExpenseCategoryDto,
-          revenuePercentage: 30
-        })
+        new ExpenseCategory(createExpenseCategoryDto.description, 50, createExpenseCategoryDto.userId),
+        new ExpenseCategory(createExpenseCategoryDto.description, 30, createExpenseCategoryDto.userId)
       ];
 
       user.id = createExpenseCategoryDto.userId;
@@ -89,11 +82,7 @@ describe('ExpenseCategoriesService', () => {
     });
 
     it('should create an expense category', async () => {
-      const user = new User({
-        name: faker.name.findName(),
-        email: faker.internet.email(),
-        password: faker.internet.password(16)
-      });
+      const user = new User(faker.name.findName(), faker.internet.email(), faker.internet.password(16));
       const newExpenseCategoryId = faker.datatype.number(100);
 
       user.id = createExpenseCategoryDto.userId;
@@ -124,11 +113,7 @@ describe('ExpenseCategoriesService', () => {
     it('should get the expense categories', async () => {
       const userId = faker.datatype.number(100);
       const params: ExpenseCategoriesSearchParams = { userId };
-      const expenseCategory = new ExpenseCategory({
-        userId,
-        description: faker.lorem.paragraph(),
-        revenuePercentage: 30
-      });
+      const expenseCategory = new ExpenseCategory(faker.lorem.paragraph(), faker.datatype.number(100), userId);
       expenseCategory.id = faker.datatype.number(100);
 
       mockExpenseCategoriesRepository.find.mockResolvedValue([expenseCategory]);
