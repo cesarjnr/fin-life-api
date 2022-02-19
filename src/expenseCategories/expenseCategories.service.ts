@@ -11,6 +11,7 @@ export interface CreateExpenseCategoryDto {
   description: string;
   revenuePercentage: number;
 }
+export type UpdateExpenseCategoryDto = Omit<CreateExpenseCategoryDto, 'userId'>;
 export interface ExpenseCategoriesSearchParams {
   userId?: number;
 }
@@ -27,7 +28,7 @@ export class ExpenseCategoriesService {
     const user = await this.findUser(userId);
     const newExpenseCategory = new ExpenseCategory(description, revenuePercentage, userId);
 
-    this.checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid(newExpenseCategory, user.expenseCategories);
+    this.checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid([...user.expenseCategories, newExpenseCategory]);
     await this.expenseCategoriesRepository.save(newExpenseCategory);
 
     return newExpenseCategory;
@@ -35,6 +36,21 @@ export class ExpenseCategoriesService {
 
   public async get(params?: ExpenseCategoriesSearchParams): Promise<ExpenseCategory[]> {
     return await this.expenseCategoriesRepository.find(params);
+  }
+
+  public async update(
+    userId: number,
+    expenseCategoryId: number,
+    updateExpenseCategoryDto: UpdateExpenseCategoryDto
+  ): Promise<ExpenseCategory> {
+    const user = await this.findUser(userId);
+    const expenseCategory = this.findExpenseCategory(user, expenseCategoryId);
+
+    Object.assign(expenseCategory, updateExpenseCategoryDto);
+    this.checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid(user.expenseCategories);
+    await this.expenseCategoriesRepository.save(expenseCategory);
+
+    return expenseCategory;
   }
 
   private async findUser(userId: number): Promise<User> {
@@ -47,17 +63,24 @@ export class ExpenseCategoriesService {
     return user;
   }
 
-  private checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid(
-    newExpenseCategory: Omit<ExpenseCategory, 'id'>,
-    existingUserExpenseCatories: ExpenseCategory[]
-  ): void {
+  private checkIfSumOfRevenuePercentageOfAllExpenseCategoriesIsValid(expenseCategories: ExpenseCategory[]): void {
     const maxRevenuePercentage = 100;
-    const existingRevenuePercentageSum = existingUserExpenseCatories.reduce((sum, expenseCategory) => {
+    const existingRevenuePercentageSum = expenseCategories.reduce((sum, expenseCategory) => {
       return (sum += expenseCategory.revenuePercentage);
     }, 0);
 
-    if (existingRevenuePercentageSum + newExpenseCategory.revenuePercentage > maxRevenuePercentage) {
-      throw new ConflictException('The revenue percentage of all expense categories cannot exceed 100%');
+    if (existingRevenuePercentageSum > maxRevenuePercentage) {
+      throw new ConflictException('The revenue percentage of all your expense categories cannot exceed 100%');
     }
+  }
+
+  private findExpenseCategory(user: User, expenseCategoryId: number): ExpenseCategory {
+    const expenseCategory = user.expenseCategories.find((expenseCategory) => expenseCategory.id === expenseCategoryId);
+
+    if (!expenseCategory) {
+      throw new NotFoundException('Expense category not found');
+    }
+
+    return expenseCategory;
   }
 }

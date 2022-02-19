@@ -17,7 +17,8 @@ describe('ExpenseCategoriesController', () => {
           provide: ExpenseCategoriesService,
           useValue: {
             create: jest.fn(),
-            get: jest.fn()
+            get: jest.fn(),
+            update: jest.fn()
           }
         }
       ]
@@ -47,6 +48,20 @@ describe('ExpenseCategoriesController', () => {
       await expenseCategoriesController.get(String(userId));
 
       expect(mockExpenseCategoriesService.get).toHaveBeenCalledWith({ userId });
+    });
+  });
+
+  describe('update', () => {
+    it('shoud call the service method with the correct params', async () => {
+      const expenseCategoryId = faker.datatype.number(100);
+      const body = {
+        description: faker.lorem.paragraph(),
+        revenuePercentage: faker.datatype.number(100)
+      };
+
+      await expenseCategoriesController.update(String(userId), String(expenseCategoryId), body);
+
+      expect(mockExpenseCategoriesService.update).toHaveBeenCalledWith(userId, expenseCategoryId, body);
     });
   });
 });

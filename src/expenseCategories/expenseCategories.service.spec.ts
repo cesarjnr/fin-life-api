@@ -8,7 +8,8 @@ import { User } from '../users/user.entity';
 import {
   ExpenseCategoriesService,
   CreateExpenseCategoryDto,
-  ExpenseCategoriesSearchParams
+  ExpenseCategoriesSearchParams,
+  UpdateExpenseCategoryDto
 } from './expenseCategories.service';
 import { ExpenseCategory } from './expenseCategory.entity';
 
@@ -51,7 +52,7 @@ describe('ExpenseCategoriesService', () => {
       revenuePercentage: 30
     };
 
-    it('should throw an NotFoundException when no user is found for the given userId', async () => {
+    it('should throw a NotFoundException when no user is found for the given id', async () => {
       const thrownError = new NotFoundException('User not found');
 
       mockUsersRepository.findOne = jest.fn();
@@ -65,7 +66,9 @@ describe('ExpenseCategoriesService', () => {
     });
 
     it('should throw a ConflictException when the revenue percentage of the new expense category plus the existing ones outweighs 100', async () => {
-      const thrownError = new ConflictException('The revenue percentage of all expense categories cannot exceed 100%');
+      const thrownError = new ConflictException(
+        'The revenue percentage of all your expense categories cannot exceed 100%'
+      );
       const user = new User(faker.name.findName(), faker.internet.email(), faker.internet.password(16));
       const existingExpenseCategories = [
         new ExpenseCategory(createExpenseCategoryDto.description, 50, createExpenseCategoryDto.userId),
@@ -123,6 +126,95 @@ describe('ExpenseCategoriesService', () => {
       expect(returnedExpenseCategories).toHaveLength(1);
       expect(returnedExpenseCategories[0]).toStrictEqual(expenseCategory);
       expect(mockExpenseCategoriesRepository.find).toHaveBeenCalledWith(params);
+    });
+  });
+
+  describe('update', () => {
+    const userId = faker.datatype.number(100);
+    const expenseCategoryId = faker.datatype.number(100);
+    const updateExpenseCategoryDto: UpdateExpenseCategoryDto = {
+      description: faker.lorem.paragraph(),
+      revenuePercentage: 30
+    };
+    it('should throw a NotFoundException when no user is found for the given id', async () => {
+      const thrownError = new NotFoundException('User not found');
+
+      await expect(
+        expenseCategoriesService.update(userId, expenseCategoryId, updateExpenseCategoryDto)
+      ).rejects.toStrictEqual(thrownError);
+      expect(mockUsersRepository.findOne).toHaveBeenCalledWith(userId, {
+        relations: ['expenseCategories']
+      });
+      expect(mockExpenseCategoriesRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw a NotFoundException when no expense category is found for the given id', async () => {
+      const user = new User(faker.name.findName(), faker.internet.email(), faker.internet.password(16));
+      const thrownError = new NotFoundException('Expense category not found');
+
+      user.id = userId;
+      user.expenseCategories = [];
+      mockUsersRepository.findOne.mockResolvedValue(user);
+
+      await expect(
+        expenseCategoriesService.update(userId, expenseCategoryId, updateExpenseCategoryDto)
+      ).rejects.toStrictEqual(thrownError);
+      expect(mockUsersRepository.findOne).toHaveBeenCalledWith(userId, {
+        relations: ['expenseCategories']
+      });
+      expect(mockExpenseCategoriesRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw a ConflictException when the revenue percentage of the new expense category plus the existing ones outweighs 100', async () => {
+      const user = new User(faker.name.findName(), faker.internet.email(), faker.internet.password(16));
+      const existingExpenseCategories = [
+        new ExpenseCategory(faker.lorem.paragraph(), 80, userId),
+        new ExpenseCategory(faker.lorem.paragraph(), 20, userId)
+      ];
+      const thrownError = new ConflictException(
+        'The revenue percentage of all your expense categories cannot exceed 100%'
+      );
+
+      existingExpenseCategories[1].id = expenseCategoryId;
+      user.id = userId;
+      user.expenseCategories = existingExpenseCategories;
+      mockUsersRepository.findOne.mockResolvedValue(user);
+
+      await expect(
+        expenseCategoriesService.update(userId, expenseCategoryId, updateExpenseCategoryDto)
+      ).rejects.toStrictEqual(thrownError);
+      expect(mockUsersRepository.findOne).toHaveBeenCalledWith(user.id, { relations: ['expenseCategories'] });
+      expect(mockExpenseCategoriesRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should update an expense category', async () => {
+      const user = new User(faker.name.findName(), faker.internet.email(), faker.internet.password(16));
+      const existingExpenseCategory = new ExpenseCategory(faker.lorem.paragraph(), 100, userId);
+
+      existingExpenseCategory.id = expenseCategoryId;
+      user.id = userId;
+      user.expenseCategories = [existingExpenseCategory];
+      mockUsersRepository.findOne.mockResolvedValue(user);
+
+      const updatedExpenseCategory = await expenseCategoriesService.update(
+        userId,
+        expenseCategoryId,
+        updateExpenseCategoryDto
+      );
+
+      expect(updatedExpenseCategory).toEqual({
+        id: expenseCategoryId,
+        description: updateExpenseCategoryDto.description,
+        revenuePercentage: updateExpenseCategoryDto.revenuePercentage,
+        userId
+      });
+      expect(mockUsersRepository.findOne).toHaveBeenCalledWith(user.id, { relations: ['expenseCategories'] });
+      expect(mockExpenseCategoriesRepository.save).toHaveBeenCalledWith({
+        id: expenseCategoryId,
+        description: updateExpenseCategoryDto.description,
+        revenuePercentage: updateExpenseCategoryDto.revenuePercentage,
+        userId
+      });
     });
   });
 });
