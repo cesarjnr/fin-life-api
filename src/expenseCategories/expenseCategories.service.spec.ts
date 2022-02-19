@@ -55,9 +55,6 @@ describe('ExpenseCategoriesService', () => {
     it('should throw a NotFoundException when no user is found for the given id', async () => {
       const thrownError = new NotFoundException('User not found');
 
-      mockUsersRepository.findOne = jest.fn();
-      mockExpenseCategoriesRepository.save = jest.fn();
-
       await expect(expenseCategoriesService.create(createExpenseCategoryDto)).rejects.toStrictEqual(thrownError);
       expect(mockUsersRepository.findOne).toHaveBeenCalledWith(createExpenseCategoryDto.userId, {
         relations: ['expenseCategories']
@@ -77,7 +74,7 @@ describe('ExpenseCategoriesService', () => {
 
       user.id = createExpenseCategoryDto.userId;
       user.expenseCategories = existingExpenseCategories;
-      mockUsersRepository.findOne = jest.fn().mockResolvedValue(user);
+      mockUsersRepository.findOne.mockResolvedValue(user);
 
       await expect(expenseCategoriesService.create(createExpenseCategoryDto)).rejects.toStrictEqual(thrownError);
       expect(mockUsersRepository.findOne).toHaveBeenCalledWith(user.id, { relations: ['expenseCategories'] });
@@ -90,11 +87,11 @@ describe('ExpenseCategoriesService', () => {
 
       user.id = createExpenseCategoryDto.userId;
       user.expenseCategories = [];
-      mockUsersRepository.findOne = jest.fn().mockResolvedValue(user);
-      mockExpenseCategoriesRepository.save = jest.fn().mockImplementation((expenseCategory: ExpenseCategory) => {
+      mockUsersRepository.findOne.mockResolvedValue(user);
+      mockExpenseCategoriesRepository.save.mockImplementation((expenseCategory: ExpenseCategory) => {
         expenseCategory.id = newExpenseCategoryId;
 
-        return expenseCategory;
+        return Promise.resolve(expenseCategory);
       });
 
       const newExpenseCategory = await expenseCategoriesService.create(createExpenseCategoryDto);
@@ -117,8 +114,8 @@ describe('ExpenseCategoriesService', () => {
       const userId = faker.datatype.number(100);
       const params: ExpenseCategoriesSearchParams = { userId };
       const expenseCategory = new ExpenseCategory(faker.lorem.paragraph(), faker.datatype.number(100), userId);
-      expenseCategory.id = faker.datatype.number(100);
 
+      expenseCategory.id = faker.datatype.number(100);
       mockExpenseCategoriesRepository.find.mockResolvedValue([expenseCategory]);
 
       const returnedExpenseCategories = await expenseCategoriesService.get(params);

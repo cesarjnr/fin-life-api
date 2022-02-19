@@ -68,10 +68,10 @@ describe('UsersService', () => {
     it('should create a user', async () => {
       const newUserId = faker.datatype.number(100);
 
-      mockUsersRepository.save = jest.fn().mockImplementation((user: User) => {
+      mockUsersRepository.save.mockImplementation((user: User) => {
         user.id = newUserId;
 
-        return user;
+        return Promise.resolve(user);
       });
 
       const newUser = await usersService.create(createUserDto);
