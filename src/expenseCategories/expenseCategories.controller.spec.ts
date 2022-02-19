@@ -3,7 +3,6 @@ import { Test } from '@nestjs/testing';
 
 import { ExpenseCategoriesController } from './expenseCategories.controller';
 import { ExpenseCategoriesService } from './expenseCategories.service';
-import { CreateExpenseCategoryDto } from './createExpenseCategory.dto';
 
 describe('ExpenseCategoriesController', () => {
   let mockExpenseCategoriesService: jest.Mocked<ExpenseCategoriesService>;
@@ -30,15 +29,15 @@ describe('ExpenseCategoriesController', () => {
 
   describe('create', () => {
     it('should call the method of the service with the correct payload', async () => {
-      const createExpenseCategoryDto: CreateExpenseCategoryDto = {
-        userId: faker.datatype.number(100),
+      const userId = faker.datatype.number(100);
+      const body = {
         description: faker.lorem.paragraph(),
         revenuePercentage: faker.datatype.number(100)
       };
 
-      await expenseCategoriesController.create(createExpenseCategoryDto);
+      await expenseCategoriesController.create(String(userId), body);
 
-      expect(mockExpenseCategoriesService.create).toHaveBeenCalledWith(createExpenseCategoryDto);
+      expect(mockExpenseCategoriesService.create).toHaveBeenCalledWith({ ...body, userId });
     });
   });
 });
